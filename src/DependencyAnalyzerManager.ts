@@ -28,17 +28,16 @@ export default class DependencyAnalyzerManager {
 		if (existingPackage != null) return existingPackage;
 
 		libx.log.v(`DependencyAnalyzer:getPackageInfo: Fetching ${basicInfo.id}`)
-		let p = this.packageResolver.fetchPackageInfo(basicInfo.name, basicInfo.version);
-
-		p.then(depInfo=>{
+		let p = libx.newPromise();
+		
+		let fetchPromise = this.packageResolver.fetchPackageInfo(basicInfo.name, basicInfo.version);
+		fetchPromise.then(depInfo=>{
 			libx.log.i(`DependencyAnalyzer:getPackageInfo: Fetched successfully ${basicInfo.id}`)
-			if (depInfo == null) {
-				return;
-			}
+			if (depInfo == null) p.reject('Got empty package!')
 			this.cache[depInfo.id] = depInfo;
-		});
-		p.catch(ex=>{
-			libx.log.e('DependencyAnalyzer:getPackageInfo: Error getting package ', basicInfo.id, ex);
+			p.resolve(depInfo);
+		}, ex=>{
+			p.reject(new Error(`DependencyAnalyzer:getPackageInfo: Error getting package "${basicInfo.id}", ex: ${ex.message || ex.statusCode}`));
 		});
 
 		return p;
@@ -62,15 +61,18 @@ export default class DependencyAnalyzerManager {
 				this.cache[dep.id] = depInfo;
 				this.resolveDependency(rootPackage, dep);
 				this.FetchAllDeps(depInfo, rootPackage);
-			});
-			p.catch(ex=>{
-				libx.log.e('DependencyAnalyzer:FetchAllDeps: Error getting dependency ', dep.id, ex);
+			}, ex=>{
+				// Empty catch to avoid `Unhandled Promise Rejection`, treated anyway in caller
 			});
 			
 			depPromises.push(p);
 		}
 
-		Promise.all(depPromises).then(depPromise.resolve(parentPackage));
+		Promise.all(depPromises).then(()=>{
+			depPromise.resolve(parentPackage)
+		}, ex=> {
+			depPromise.reject(ex);
+		});
 
 		if (depKeys.length == 0) {
 			this.onHitEndOfRoad.trigger(rootPackage);
@@ -104,6 +106,10 @@ export default class DependencyAnalyzerManager {
 
 		this.rootsPromises[root.id] = libx.newPromise();
 		let depPromise = this.FetchAllDeps(root);
+
+		depPromise.catch(ex=>{
+			this.rootsPromises[root.id].reject(ex);
+		})
 
 		return this.rootsPromises[root.id] || depPromise;
 	}

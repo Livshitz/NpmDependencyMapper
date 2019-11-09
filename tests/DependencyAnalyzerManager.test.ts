@@ -50,7 +50,7 @@ class MockPackageResolver implements IPackageResolver {
 		libx.sleep(this.delayMS).then(()=>{
 			let res = this.registry[dep.id];
 			if (res == null) {
-				p.reject(`Package ${packageName}@${packageVersion} was not found!`);
+				p.reject(new Error(`Package ${packageName}@${packageVersion} was not found!`));
 				return;
 			}
 			p.resolve(new PackageInfo(res));
@@ -90,7 +90,7 @@ test('non existing version', async () => {
 	try {
 		await dam.getDependenciesMap('a', '0.none');
 	} catch(ex) {
-		expect(ex).toBe('Package a@0.none was not found!');
+		expect(ex.message).toBe('DependencyAnalyzer:getPackageInfo: Error getting package "a@0.none", ex: Package a@0.none was not found!');
 	}
 })
 

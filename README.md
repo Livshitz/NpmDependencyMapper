@@ -8,6 +8,7 @@ Assumptions:
 * We'll be ignoring devDependencies
 * Git-URLs Dependencies (e.g: 'git+'/'git@') will be treated as 'latest'
 * A global module (libx) is used for simplicity, otherwise best practice is to explicitly require in each dependant module
+* Packages/dependencies like `@types/node` are not supported as `https://registry.npmjs.org/<package_name>/<version_or_tag>` will result in 404/401
 
 
 Design:
@@ -29,7 +30,6 @@ As in mathematics/combinatorics, I choose to break down the problem into 2 separ
 
 Compromises:
 * In favor of simplicity, a given dependency might be resolved multiple times __concurrently__ when it's being enqueued from the 1st level of deps, and from a deeper level while the first hasn't been resolved yet, or if same package is enqueued simultaneously. In ideal implementation I'd create an 'in-progress' hash-map, mapping packageId to a promise, so before enqueuing them check if in progress and register to its promise,  avoiding enqueue of same package.
-* Due to lack of time, I had to leave an existing bug: when trying to resolve a non existing package name or version, the app/server will get `Unhandled Promise Rejection`. I didn't pinpoint the problematic promise.
 
 
 ## Dependencies:
@@ -48,10 +48,12 @@ Compromises:
 
 ## How to use:
 - Start run as NodeJS script   
-`yarn start`
+`yarn start`   
+(example: `yarn start --name express --ver 4.17.1`)
 
 - Start local server   
-`yarn serve`
+`yarn serve`   
+(see endpoints bellow)
 
 - Run tests:   
 ```yarn test```   

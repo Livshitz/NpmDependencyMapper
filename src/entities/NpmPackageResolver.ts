@@ -1,6 +1,7 @@
 import { BasePackageEntity } from "./BasePackageEntity";
 import { PackageInfo } from "./PackageInfo";
 import { IPackageResolver } from "./IPackageResolver";
+
 export class NpmPackageResolver implements IPackageResolver {
 	public async fetchPackageInfo(packageName: string, packageVersion?: string): Promise<PackageInfo> {
 		let version = BasePackageEntity.normalizeVersionString(packageVersion);

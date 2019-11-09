@@ -45,8 +45,9 @@ class Server {
 				}
 
 			} catch(ex) {
-				libx.log.e(`Server: Error while getting and mapping dependency for ${packageName}@${packageVersion}`, ex.message);
-				return res.status(500).send(ex);
+				let err = `Server: Error while getting and mapping dependency for ${packageName}@${packageVersion}, ex: ${ex.message}`;
+				libx.log.e(err);
+				return res.status(500).send(err);
 			}
 		});
 

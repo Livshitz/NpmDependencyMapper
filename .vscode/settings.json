@@ -1,4 +1,8 @@
 {
+	"files.exclude": {
+		"build": true,
+		"node_modules/**/*": true,
+	},
 	"cSpell.enabledLanguageIds": [
 		"asciidoc",
 		"c",

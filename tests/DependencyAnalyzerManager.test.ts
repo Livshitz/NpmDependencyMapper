@@ -13,24 +13,32 @@ let dam: DependencyAnalyzerManager;
 
 class MockPackageResolver implements IPackageResolver {
 	private registry = {
-		'a@0': {
+		'a@0.0.1': {
 			name: 'a',
-			version: '0',
+			version: '0.0.1',
 			dependencies: {
-				b: '0.1',
-				c: '0.1',
+				b: '~0.0.1',
 			}
 		},
-		'b@0.1': {
+		'b@0.0.1': {
 			name: 'b',
-			version: '0.1',
+			version: '0.0.1',
+			dependencies: {
+				d: '1',
+				c: '> 0.0.1 < 2',
+			}
+		},
+		'c@0.0.1': {
+			name: 'c',
+			version: '0.0.1',
 			dependencies: {
 			}
 		},
-		'c@0.1': {
-			name: 'c',
-			version: '0.1',
+		'd@1.0.0': {
+			name: 'd',
+			version: '1.0.0',
 			dependencies: {
+
 			}
 		},
 	}
@@ -56,26 +64,26 @@ beforeAll(async()=>{
 })
 
 test('basic fetch without children', async () => {
-	let map = await dam.getDependenciesMap('b', '0.1');
+	let map = await dam.getDependenciesMap('b', '0.0.1');
 	expect(map).not.toBe(null);
-	expect(map.toStringDeep()).toBe("b@0.1\n");
+	expect(map.toStringDeep()).toBe("b@0.0.1\n- d@1.0.0\n- c@0.0.1\n");
 })
 
 test('basic fetch with children', async () => {
-	let map = await dam.getDependenciesMap('a', '0');
+	let map = await dam.getDependenciesMap('a', '0.0.1');
 	expect(map).not.toBe(null);
-	expect(map.toStringDeep()).toBe("a@0\n- b@0.1\n- c@0.1\n");
+	expect(map.toStringDeep()).toBe("a@0.0.1\n- b@0.0.1\n-- d@1.0.0\n-- c@0.0.1\n");
 })
 
 test('multi concurrent', async () => {
-	let map1 = await dam.getDependenciesMap('a', '0');
-	let map11 = await dam.getDependenciesMap('a', '0');
-	let map2 = await dam.getDependenciesMap('b', '0.1');
-	let map3 = await dam.getDependenciesMap('c', '0.1');
-	expect(map1.toStringDeep()).toBe("a@0\n- b@0.1\n- c@0.1\n");
-	expect(map11.toStringDeep()).toBe("a@0\n- b@0.1\n- c@0.1\n");
-	expect(map2.toStringDeep()).toBe("b@0.1\n");
-	expect(map3.toStringDeep()).toBe("c@0.1\n");
+	let map1 = await dam.getDependenciesMap('a', '0.0.1');
+	let map11 = await dam.getDependenciesMap('a', '0.0.1');
+	let map2 = await dam.getDependenciesMap('b', '0.0.1');
+	let map3 = await dam.getDependenciesMap('c', '0.0.1');
+	expect(map1.toStringDeep()).toBe("a@0.0.1\n- b@0.0.1\n-- d@1.0.0\n-- c@0.0.1\n");
+	expect(map11.toStringDeep()).toBe("a@0.0.1\n- b@0.0.1\n-- d@1.0.0\n-- c@0.0.1\n");
+	expect(map2.toStringDeep()).toBe("b@0.0.1\n- d@1.0.0\n- c@0.0.1\n");
+	expect(map3.toStringDeep()).toBe("c@0.0.1\n");
 })
 
 test('non existing version', async () => {

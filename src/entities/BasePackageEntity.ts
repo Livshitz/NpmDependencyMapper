@@ -14,7 +14,9 @@ export class BasePackageEntity {
 	public static normalizeVersionString(input: string): string {
 		if (input == null)
 			return null;
-		return input.replace(/(.*\>\s*)|(\s*\<.*)|[\~\=\^\s\*]|(git.*)/g, '');
+		let ret = input.replace(/(.*\>\s*)|(\s*\<.*)|[\~\=\^\s\*]|(git.*)/g, '');
+		ret = ret.replace(/^(\d+)$/, '$1.0.0');
+		return ret;
 	}
 
 	public toString() {

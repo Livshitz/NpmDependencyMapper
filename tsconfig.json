@@ -1,0 +1,29 @@
+{
+	"compilerOptions": {
+		"target": "es2017",
+		"module": "commonjs",
+		"moduleResolution": "node",
+		"removeComments": true,
+		"preserveConstEnums": true,
+		"experimentalDecorators": true,
+		"sourceMap": true,
+		"outDir": "./build/",
+		"noImplicitAny": false,
+		"typeRoots": ["node_modules/@types", "."],
+		"skipLibCheck": true,
+		"types": [ 	
+			"libx.js",
+			"jest",
+			"node"
+		]
+	},
+	"include": [
+		"./**/*.d.ts",
+		"./src/**/*.ts",
+		"./test/**/*.ts", "src/DependencyAnalyzerManager.ts", ".tmp/DependencyAnalyzerOld.ts", ".tmp/DependencyAnalyzer.old2.tsx", ".tmp/QueueWorker.ts", ".tmp/FetcherService.ts",
+	],
+	"exclude": [
+		"node_modules/**/*",
+		".tmp/**/*"
+	]
+}

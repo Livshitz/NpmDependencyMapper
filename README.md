@@ -47,7 +47,7 @@ Compromises:
 
 
 ## How to use:
-- Start run as NodeJS script   
+- Run as NodeJS script   
 `yarn start`   
 (example: `yarn start --name express --ver 4.17.1`)
 

@@ -100,9 +100,9 @@ export default class DependencyAnalyzerManager {
 
 	private async localizeAllDependencies(packageName: string, version: string): Promise<PackageInfo> {
 		let rootPackage = new BasePackageEntity(packageName, version);
-		if (this.rootToDeps[rootPackage.id] == null) this.rootToDeps[rootPackage.id] = {};
 
 		let root = await this.getPackageInfo(rootPackage);
+		if (this.rootToDeps[root.id] == null) this.rootToDeps[root.id] = {};
 
 		this.rootsPromises[root.id] = libx.newPromise();
 		let depPromise = this.FetchAllDeps(root);

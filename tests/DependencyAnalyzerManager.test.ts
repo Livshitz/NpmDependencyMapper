@@ -20,6 +20,13 @@ class MockPackageResolver implements IPackageResolver {
 				b: '~0.0.1',
 			}
 		},
+		'a@0.0.2': {
+			name: 'a',
+			version: '0.0.2',
+			dependencies: {
+				c: '~0.0.1',
+			}
+		},
 		'b@0.0.1': {
 			name: 'b',
 			version: '0.0.1',
@@ -49,6 +56,17 @@ class MockPackageResolver implements IPackageResolver {
 		let p = libx.newPromise();
 		libx.sleep(this.delayMS).then(()=>{
 			let res = this.registry[dep.id];
+
+			if (res == null && dep.version == null) {
+				let keys = Object.keys(this.registry);
+				let pkgs = libx._.filter(this.registry, obj=>{
+					return obj.name == dep.name;
+				});
+				if (pkgs != null && pkgs.length > 0) {
+					res = libx._.last(pkgs);
+				}
+			}
+
 			if (res == null) {
 				p.reject(new Error(`Package ${packageName}@${packageVersion} was not found!`));
 				return;
@@ -92,6 +110,12 @@ test('non existing version', async () => {
 	} catch(ex) {
 		expect(ex.message).toBe('DependencyAnalyzer:getPackageInfo: Error getting package "a@0.none", ex: Package a@0.none was not found!');
 	}
+})
+
+test('resolve with "latest" tag', async () => {
+	let map = await dam.getDependenciesMap('a', null);
+	expect(map).not.toBe(null);
+	expect(map.toStringDeep()).toBe("a@0.0.2\n- c@0.0.1\n");
 })
 
 // More TBD

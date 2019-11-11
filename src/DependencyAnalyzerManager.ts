@@ -43,7 +43,7 @@ export default class DependencyAnalyzerManager {
 		return p;
 	}
 
-	public async FetchAllDeps(parentPackage: PackageInfo, rootPackage?: PackageInfo) : Promise<PackageInfo> {
+	private async FetchAllDeps(parentPackage: PackageInfo, rootPackage?: PackageInfo) : Promise<PackageInfo> {
 		let depPromise = libx.newPromise();
 		let depPromises = [];
 

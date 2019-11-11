@@ -31,6 +31,43 @@ As in mathematics/combinatorics, I choose to break down the problem into 2 separ
 Compromises:
 * In favor of simplicity, a given dependency might be resolved multiple times __concurrently__ when it's being enqueued from the 1st level of deps, and from a deeper level while the first hasn't been resolved yet, or if same package is enqueued simultaneously. In ideal implementation I'd create an 'in-progress' hash-map, mapping packageId to a promise, so before enqueuing them check if in progress and register to its promise,  avoiding enqueue of same package.
 
+Example Output:   
+`$ yarn start --name body-parser --ver 1.19.0`
+```
+ - body-parser@1.19.0
+         - bytes@3.1.0
+         - content-type@1.0.4
+         - debug@2.6.9
+                 - ms@2.0.0
+         - depd@1.1.2
+         - http-errors@1.7.2
+                 - depd@1.1.2
+                 - inherits@2.0.3
+                 - setprototypeof@1.1.1
+                 - statuses@1.5.0
+                 - toidentifier@1.0.0
+         - iconv-lite@0.4.24
+                 - safer-buffer@2.1.2
+         - on-finished@2.3.0
+                 - ee-first@1.1.1
+         - qs@6.7.0
+         - raw-body@2.4.0
+                 - bytes@3.1.0
+                 - http-errors@1.7.2
+                         - depd@1.1.2
+                         - inherits@2.0.3
+                         - setprototypeof@1.1.1
+                         - statuses@1.5.0
+                         - toidentifier@1.0.0
+                 - iconv-lite@0.4.24
+                         - safer-buffer@2.1.2
+                 - unpipe@1.0.0
+         - type-is@1.6.17
+                 - media-typer@0.3.0
+                 - mime-types@2.1.24
+                         - mime-db@1.40.0
+```
+
 
 ## Dependencies:
 - [libx.js](https://github.com/Livshitz/libx.js) - multi-purpose toolbox with plenty of helpers, wrappers and useful modules
